@@ -10,6 +10,12 @@ def initialization():
     server_id = 0
     api = "http://" + config.api_ip + "/send_group_msg?group_id=" + config.group_id + "&message="
     server_status = list()
+    try:
+        requests.get("http://127.0.0.1:5700/get_login_info")
+    except requests.exceptions.ConnectionError:
+        print("Unable connect to go-cqhttp")
+        exit()
+    
     for i in config.server_list:
         server_status.append([i, "offline", "offline"])
 
