@@ -27,10 +27,8 @@ def check_server(server_address):
         mcstatus.JavaServer.lookup(server_address, config.timeout * 0.001).status()
 
     except TimeoutError:
-        print(server_status[server_id])
         server_status[server_id][1] = "offline"
         if server_status[server_id][1] != server_status[server_id][2]:
-            print(config.offline_massage.replace("~server~", server_address))
             send_message(server_address, "offline")
 
         server_status[server_id][2] = server_status[server_id][1]
@@ -41,9 +39,7 @@ def check_server(server_address):
 
     else:
         print(server_status[server_id])
-        server_status[server_id][1] = "online"
         if server_status[server_id][1] != server_status[server_id][2]:
-            print(config.online_massage.replace("~server~", server_address))
             send_message(server_address, "online")
 
         server_status[server_id][2] = server_status[server_id][1]
@@ -55,7 +51,16 @@ def check_server(server_address):
 def send_message(server_address, message_type):
     global api
     if message_type == "online":
-        requests.get(api + config.online_massage.replace("~server~", server_address))
+        try:
+            print(config.online_massage.replace("~server~", server_address))
+            requests.get(api + config.online_massage.replace("~server~", server_address))
+        except requests.exceptions.ConnectionError:
+            print("Unable send message, do you shut down go-cqhttp accidentally?")
     
     else:
-        requests.get(api + config.offline_massage.replace("~server~", server_address))
+        try:
+            print(config.offline_massage.replace("~server~", server_address))
+            requests.get(api + config.offline_massage.replace("~server~", server_address))
+        except requests.exceptions.ConnectionError:
+            print("Unable send message, do you shut down go-cqhttp accidentally?")
+        
